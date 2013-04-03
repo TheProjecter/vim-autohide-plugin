@@ -3,7 +3,7 @@
 "   Vim, and/or for files in a user-created list whenever Vim writes them.
 " Last Change: 2013 Apr 03
 " Maintainer: Ben Fritz <fritzophrenic@gmail.com>
-" License: MIT
+" License: MIT <http://opensource.org/licenses/MIT>
 " Version: 1
 
 if exists('g:loaded_autohide') || !has('win32') || v:version < 700
