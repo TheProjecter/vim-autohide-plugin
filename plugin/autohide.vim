@@ -5,12 +5,12 @@
 " Maintainer: Ben Fritz <fritzophrenic@gmail.com>
 " Repository/Issues list: http://vim-autohide-plugin.googlecode.com/
 " License: MIT <http://opensource.org/licenses/MIT>
-" Version: 2 (in progress)
+" Version: 2
 
 if exists('g:loaded_autohide') || !has('win32') || v:version < 700
   finish
 endif
-let g:loaded_autohide = 1.5
+let g:loaded_autohide = 2
 
 let s:save_cpo=&cpo
 set cpo&vim
