@@ -34,7 +34,7 @@ function Autohide_DoHide(file)
   endif
 endfun
 
-function s:DefaultOptions()
+function s:GetTypes()
   if exists('g:autohide_types')
     return g:autohide_types
   else
@@ -42,8 +42,16 @@ function s:DefaultOptions()
   endif
 endfun
 
+function s:GetFilePatterns()
+  if exists('g:autohide_file_list')
+    return g:autohide_file_list
+  else
+    return ['.*']
+  endif
+endfun
+
 function s:HideFilesOnIdle()
-  let l:autohide_types = s:DefaultOptions()
+  let l:autohide_types = s:GetTypes()
   if l:autohide_types =~# 's' && &swapfile
     redir => l:sw_file
     silent swapname
@@ -53,7 +61,7 @@ function s:HideFilesOnIdle()
 endfun
 
 function s:HideFilesOnWrite(file)
-  let l:autohide_types = s:DefaultOptions()
+  let l:autohide_types = s:GetTypes()
   call s:HideFilesOnIdle()
   if l:autohide_types =~# 'u' && &undofile
     call Autohide_DoHide(undofile(a:file))
@@ -62,10 +70,20 @@ function s:HideFilesOnWrite(file)
     " note this will not work if 'backupdir' is set
     call Autohide_DoHide(fnamemodify(a:file,':r').&backupext)
   endif
+  if l:autohide_types =~# 'p'
+    let l:fpats = s:GetFilePatterns()
+    for pattern in l:fpats
+      let candidates = globpath(fnamemodify(a:file,':p:h'), pattern)
+      if candidates =~? "\\(^\\|\n\\)".a:file."\\(\n\\|$\\)"
+        call Autohide_DoHide(a:file)
+        break
+      endif
+    endfor
+  endif
 endfun
 
 function s:HideFilesOnExit()
-  let l:autohide_types = s:DefaultOptions()
+  let l:autohide_types = s:GetTypes()
   if l:autohide_types =~ 'v' && !empty(&viminfo)
     if &viminfo =~ '\%(^\|,\)n'
       let l:try_file = expand(substitute(&viminfo, '\v^%(.*,)*n(\f+)', '\1', ''))
