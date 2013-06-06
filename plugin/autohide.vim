@@ -20,8 +20,13 @@ autocmd BufWritePost * call s:HideFilesOnWrite(expand("<afile>:p"))
 autocmd VimLeave * call s:HideFilesOnExit()
 
 function Autohide_DoHide(file)
+  let delay=0
+  while !filewritable(a:file) && delay < s:GetMaxDelay()
+    let delay += 1
+    sleep 1
+  endwhile
   if exists('g:autohide_debug')
-    echomsg "trying to hide" a:file
+    echomsg "trying to hide" a:file "after waiting" delay "seconds"
   endif
   if filewritable(a:file)
     if system('attrib /L +H '.s:SafeShellEscape(a:file)) =~? '^Invalid switch'
@@ -31,6 +36,14 @@ function Autohide_DoHide(file)
   endif
   if exists('g:autohide_debug')
     echomsg system('attrib '.s:SafeShellEscape(a:file))
+  endif
+endfun
+
+function s:GetMaxDelay()
+  if exists('g:autohide_max_wait_for_write')
+    return g:autohide_max_wait_for_write
+  else
+    return 2
   endif
 endfun
 
