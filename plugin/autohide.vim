@@ -1,16 +1,16 @@
 " autohide: a Vim global plugin to automatically hide files on Windows
 "   Sets the 'hidden' filesystem attribute for files created automatically by
 "   Vim, and/or for files in a user-created list whenever Vim writes them.
-" Last Change: 2013 Jun 05
+" Last Change: 2013 Sep 05
 " Maintainer: Ben Fritz <fritzophrenic@gmail.com>
 " Repository/Issues list: http://vim-autohide-plugin.googlecode.com/
 " License: MIT <http://opensource.org/licenses/MIT>
-" Version: 2
+" Version: 4
 
 if exists('g:loaded_autohide') || !has('win32') || v:version < 700
   finish
 endif
-let g:loaded_autohide = 3
+let g:loaded_autohide = 4
 
 let s:save_cpo=&cpo
 set cpo&vim
@@ -87,7 +87,7 @@ function s:HideFilesOnWrite(file)
     let l:fpats = s:GetFilePatterns()
     for pattern in l:fpats
       let candidates = globpath(fnamemodify(a:file,':p:h'), pattern)
-      if candidates =~? "\\(^\\|\n\\)".escape(a:file, '\')."\\(\n\\|$\\)"
+      if candidates =~? '\V\(\^\|'."\n".'\)'.escape(a:file, '\').'\('."\n".'\|\$\)'
         call Autohide_DoHide(a:file)
         break
       endif
